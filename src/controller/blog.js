@@ -29,16 +29,32 @@ const getDetail = (id) => {
     ]
 }
 
+// add blog
 const newBlog = (blogData ={}) => {
-    console.log('new blog data----',blogData)
+    // console.log('new blog data----',blogData)
     return {
         id:3,// 新建博客id为3
     
     }
 }
 
+// update blog
+const updateBlog = (id,blogData={}) => {
+    console.log('blogData---',blogData)
+    return true // update success
+}
+
+// delete blog
+
+const deleteBlog = (id) => {
+    console.log('id---',id)
+    return true // delete success
+}
+
 module.exports = {
     getList,
     getDetail,
-    newBlog
+    newBlog,
+    updateBlog,
+    deleteBlog
 }

@@ -1,12 +1,18 @@
+const { SuccessModal, ErrorModal } = require('../model/resModel') 
+const loginCheck = require('../controller/user')
+
 const handleUserRouter = (req,res) => {
     const method = req.method
 
 
     // login
     if(method === 'POST' && req.path === '/api/user/login') {
-        return {
-            msg:'login interface1'
+        const { username,password } = req.body
+        const result = loginCheck(username,password)
+        if(result){
+            return new SuccessModal(result)
         }
+        return new ErrorModal('login error')
     }
 
 }
