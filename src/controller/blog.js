@@ -1,20 +1,29 @@
-const getList = (author,keyword) => {
-    return [
-        {
-            id:1,
-            title:'标题A',
-            content:'特特特图teste',
-            createTime:'1588836478084',
-            author:'zhangsan'
-        },
-        {
-            id:2,
-            title:'标题2',
-            content:'特特特图teste222',
-            createTime:'1588836426640',
-            author:'lisi'
-        }
-    ]
+const { exec } = require('../db/mysql')
+
+// const getList = (author,keyword) => {
+//     let sql = "select * from blogs"
+//     // if(author){
+//     //     sql += `and author = '${author}' `
+//     // }
+//     // if(keyword){
+//     //     sql += `and title like '%${keyword}' `
+//     // }
+//     // sql += `order by createtime desc`
+
+//     return exec(sql)
+// }
+const getList = (author, keyword) => {
+    let sql = `select * from blogs where 1=1 `
+    if (author) {
+        sql += `and author='${author}' `
+    }
+    if (keyword) {
+        sql += `and title like '%${keyword}%' `
+    }
+    sql += `order by createtime desc;`
+
+    // 返回 promise
+    return exec(sql)
 }
 
 const getDetail = (id) => {

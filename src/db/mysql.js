@@ -11,11 +11,9 @@ function exec(sql) {
     const promise = new Promise((resolve,reject)=>{
         connect.query(sql,(err,result)=>{
             if(err){
-                console.log('err---',err)
                 reject(err)
                 return
             }
-            console.log('result---',result)
             resolve(result)
         })
     })

@@ -42,13 +42,24 @@ const serverHandle = (req,res) => {
     // 处理 post Data
     getPostData(req).then(postData =>{
         req.body = postData
-
-        // 处理blog路由
-        const blogData = handleBlogRouter(req,res)
-        if(blogData) {
-            res.end(JSON.stringify(blogData))
+    
+        //处理blog路由
+        // const blogData = handleBlogRouter(req,res)
+        // if(blogData){
+        //     res.end(JSON.stringify(blogData))
+        //     return
+        // }
+        const blogResult = handleBlogRouter(req, res)
+        console.log('blogResult',blogResult)
+        if(blogResult) {
+            blogResult.then(blogData =>{
+                console.log('11111')
+                res.end(JSON.stringify(blogData))
+            })
+            console.log('22222')
             return
         }
+    
 
         // 处理user路由
         const userData = handleUserRouter(req,res)
