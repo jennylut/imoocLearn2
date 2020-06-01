@@ -20,32 +20,40 @@ const handleBlogRouter = (req,res) => {
     }
     // 获取博客详情
     if(method === 'GET' && req.path === '/api/blog/detail') {
-        const data = getDetail(id)
-        return new SuccessModal(data)
+        const result = getDetail(id)
+        return result.then(data=>{
+            return new SuccessModal(data)
+        })
     }
     // 新增博客
     if(method === 'POST' && req.path === '/api/blog/new') {
-        const data = newBlog(req.body)
-        return new SuccessModal(data)
+        const result = newBlog(req.body)
+        return result.then(data => {
+            return new SuccessModal(data)
+        })
     }
     // update博客
     if(method === 'POST' && req.path === '/api/blog/update') {
         const result = updateBlog(id,req.body)
-        if(result) {
-            return new SuccessModal(result)
-        }else{
-            return new ErrorModal('update error')
-        }
+        return result.then(data => {
+            if(data) {
+                return new SuccessModal(data)
+            } else{
+                return new ErrorModal('update error')
+            }
+        })
     
     }
     // delete博客
     if(method === 'POST' && req.path === '/api/blog/delete') {
-        const result = deleteBlog(id)
-        if(result) {
-            return new SuccessModal(result)
-        }else{
-            return new ErrorModal('delete error')
-        }
+        const result = deleteBlog(id,req.body)
+        return result.then(data => {
+            if(data) {
+                return new SuccessModal(data)
+            }else{
+                return new ErrorModal('delete error')
+            }
+        })
     }
 
 }
