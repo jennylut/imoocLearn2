@@ -1,6 +1,6 @@
 const { exec } = require('../db/mysql')
 
-const loginCheck = (username,password) => {
+const login = (username,password) => {
     console.log('use,psd---',username,password)
     // if(username === 'zhangsan' && password === '123') {
     //     return true
@@ -12,4 +12,4 @@ const loginCheck = (username,password) => {
     })
 }
 
-module.exports = loginCheck
+module.exports = login
