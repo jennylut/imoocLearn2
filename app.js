@@ -2,6 +2,16 @@ const querystring = require('querystring')
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 
+const getCookieExpire = () => {
+    const d = new Date()
+    d.setTime(d.getTime() + (24 * 60 * 60 * 1000)) // 设置过期时间24小时
+    console.log('d.toGMTString()',d.toGMTString())
+    return d.toGMTString()
+}
+
+// session 数据
+const SESSION_DATA = {}
+
 // 处理post Data
 const getPostData = (req) => {
     const promise = new Promise((resolve,reject)=>{
@@ -52,6 +62,21 @@ const serverHandle = (req,res) => {
         req.cookie[key] = val
     })
 
+    // 解析session
+    let needSetCookie = false // 判断是否需要设置session
+    let userId = req.cookie.userid
+    if(userId){
+        if(!SESSION_DATA[userId]){
+            SESSION_DATA[userId] = {}
+        }
+    } else{
+        needSetCookie = true
+        userId = `${Date.now()}_${Math.random()}` // userId 随机唯一
+        SESSION_DATA[userId] = {}
+    }
+    req.session = SESSION_DATA[userId]
+    req.session = SESSION_DATA[userId]
+
     // 处理 post Data
     getPostData(req).then(postData =>{
         req.body = postData
@@ -66,10 +91,12 @@ const serverHandle = (req,res) => {
         console.log('blogResult',blogResult)
         if(blogResult) {
             blogResult.then(blogData =>{
-                console.log('11111')
+                if(needSetCookie){
+                    res.setHeader('Set-Cookie',`userid=${userId}; path=/; httpOnly; expires=${getCookieExpire()}`)
+                }
                 res.end(JSON.stringify(blogData))
             })
-            console.log('22222')
+        
             return
         }
     
@@ -84,6 +111,9 @@ const serverHandle = (req,res) => {
         const userResult = handleUserRouter(req,res)
         if(userResult){
             userResult.then(userData => {
+                if(needSetCookie){
+                    res.setHeader('Set-Cookie',`userid=${userId}; path=/; httpOnly; expires=${getCookieExpire()}`)
+                }
                 res.end(JSON.stringify(userData))
             })
             return

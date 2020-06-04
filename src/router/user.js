@@ -3,7 +3,7 @@ const login = require('../controller/user')
 
 const getCookieExpire = () => {
     const d = new Date()
-    d.setTime(d.getTime() + (24 * 60 * 60 * 1000))
+    d.setTime(d.getTime() + (24 * 60 * 60 * 1000)) // 设置过期时间24小时
     console.log('d.toGMTString()',d.toGMTString())
     return d.toGMTString()
 }
@@ -19,7 +19,11 @@ const handleUserRouter = (req,res) => {
         const result = login(username,password)
         return result.then(data=>{
             if(data.username){
-                res.setHeader('Set-Cookie',`username=${data.username}; path=/; httpOnly; expires=${getCookieExpire()}`)
+                // res.setHeader('Set-Cookie',`username=${data.username}; path=/; httpOnly; expires=${getCookieExpire()}`)
+                // 设置 session
+                req.session.username = data.username
+                req.session.realname = data.realname
+                console.log('req.session',req.session)
                 return new SuccessModal(result)
             }
             return new ErrorModal('login error')
@@ -28,9 +32,9 @@ const handleUserRouter = (req,res) => {
 
     // 登录验证测试
     if(method === 'GET' && req.path ==='/api/user/login-test'){
-        if(req.cookie.username){
+        if(req.session.username){
             return  Promise.resolve( new SuccessModal({
-                username:req.cookie.username
+                session:req.session
             }))
         }
         return Promise.resolve(new ErrorModal('login error'))
