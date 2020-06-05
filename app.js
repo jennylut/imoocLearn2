@@ -1,6 +1,7 @@
 const querystring = require('querystring')
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
+const { get, set } = require('./src/db/redis')
 
 const getCookieExpire = () => {
     const d = new Date()
@@ -9,8 +10,10 @@ const getCookieExpire = () => {
     return d.toGMTString()
 }
 
+
+
 // session 数据
-const SESSION_DATA = {}
+// const SESSION_DATA = {}
 
 // 处理post Data
 const getPostData = (req) => {
@@ -63,22 +66,45 @@ const serverHandle = (req,res) => {
     })
 
     // 解析session
+    // let needSetCookie = false // 判断是否需要设置session
+    // let userId = req.cookie.userid
+    // if(userId){
+    //     if(!SESSION_DATA[userId]){
+    //         SESSION_DATA[userId] = {}
+    //     }
+    // } else{
+    //     needSetCookie = true
+    //     userId = `${Date.now()}_${Math.random()}` // userId 随机唯一
+    //     SESSION_DATA[userId] = {}
+    // }
+    // req.session = SESSION_DATA[userId]
+    // req.session = SESSION_DATA[userId]
+
     let needSetCookie = false // 判断是否需要设置session
     let userId = req.cookie.userid
-    if(userId){
-        if(!SESSION_DATA[userId]){
-            SESSION_DATA[userId] = {}
-        }
-    } else{
+    if(!userId){
         needSetCookie = true
         userId = `${Date.now()}_${Math.random()}` // userId 随机唯一
-        SESSION_DATA[userId] = {}
+        // 初始化redis
+        set(userId,{})
     }
-    req.session = SESSION_DATA[userId]
-    req.session = SESSION_DATA[userId]
 
-    // 处理 post Data
-    getPostData(req).then(postData =>{
+    //获取 session
+    req.sessionId = userId
+    get(req.sessionId).then(sessionData =>{
+        if(sessionData == null) {
+            // 初始化 redis 中的 session 值
+            set(req.sessionId,{})
+            // 设置 session
+            req.session = {}
+        } else {
+            req.session = sessionData
+        }
+        console.log('req.session---',req.session)
+
+        // 处理 post Data
+        return getPostData(req)
+    }).then(postData =>{
         req.body = postData
     
         //处理blog路由
