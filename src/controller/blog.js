@@ -23,13 +23,13 @@ const getDetail = (id) => {
 
 // add blog
 const newBlog = (blogData ={}) => {
-    // console.log('new blog data----',blogData)
-    const { title,content,author } = blogData
+    console.log('new blog data----',blogData)
+    const { title,content } = blogData
+    const author = blogData.author
     const createtime = Date.now()
     const sql = ` insert into blogs (title, content, createtime, author) 
     values ('${title}', '${content}', ${createtime}, '${author}');`
     return exec(sql).then(insertData =>{
-        console.log('insertData----',insertData)
         return {
             id:insertData.insertId
         }
@@ -51,9 +51,8 @@ const updateBlog = (id,blogData={}) => {
 
 // delete blog
 
-const deleteBlog = (id,delData) => {
+const deleteBlog = (id,author) => {
     // console.log('id---',id)
-    const { author } = delData
     const sql = `delete from blogs where id='${id}' and author= '${author}';`
     return exec(sql).then(delData=>{
         console.log('delData---',delData)

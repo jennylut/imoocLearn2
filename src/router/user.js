@@ -11,8 +11,6 @@ const getCookieExpire = () => {
 
 const handleUserRouter = (req,res) => {
     const method = req.method
-
-
     // login
     if(method === 'POST' && req.path === '/api/user/login') {
         const { username,password } = req.body
@@ -27,9 +25,9 @@ const handleUserRouter = (req,res) => {
                 // 同步到 redis
                 set(req.sessionId,req.session)
             
-
+                
                 console.log('req.session',req.session)
-                return new SuccessModal(result)
+                return new SuccessModal(req.session)
             }
             return new ErrorModal('login error')
         })

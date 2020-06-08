@@ -15,12 +15,17 @@ const handleBlogRouter = (req,res) => {
 
     // 获取博客列表
     if(method === 'GET' && req.path === '/api/blog/list') {
-        const author = req.query.author || ''
+        let author = req.query.author || ''
         const keyword = req.query.keyword || ''
         const loginCheckResult = loginCheck(req)
-        if(loginCheckResult){
-            // 未登录
-            return loginCheck
+        if(req.query.isadmin){
+            // admin auth
+            if(loginCheckResult){
+                // 未登录
+                return loginCheckResult
+            }
+            // 查询自己的博客
+            author = req.session.username
         }
 
         // const listData = {}
@@ -36,7 +41,7 @@ const handleBlogRouter = (req,res) => {
         const loginCheckResult = loginCheck(req)
         if(loginCheckResult){
             // 未登录
-            return loginCheck
+            return loginCheckResult
         }
         const result = getDetail(id)
         return result.then(data=>{
@@ -50,8 +55,8 @@ const handleBlogRouter = (req,res) => {
             // 未登录
             return loginCheck
         }
-        const result = newBlog(req.body)
         req.body.author = req.session.username
+        const result = newBlog(req.body)
         return result.then(data => {
             return new SuccessModal(data)
         })
@@ -62,7 +67,7 @@ const handleBlogRouter = (req,res) => {
         const loginCheckResult = loginCheck(req)
         if(loginCheckResult){
             // 未登录
-            return loginCheck
+            return loginCheckResult
         }
         return result.then(data => {
             if(data) {
@@ -75,13 +80,13 @@ const handleBlogRouter = (req,res) => {
     }
     // delete博客
     if(method === 'POST' && req.path === '/api/blog/delete') {
-        const result = deleteBlog(id,req.body)
         const loginCheckResult = loginCheck(req)
         if(loginCheckResult){
             // 未登录
-            return loginCheck
+            return loginCheckResult
         }
-        req.body.author = req.session.username
+        const author = req.session.username
+        const result = deleteBlog(id,author)
         return result.then(data => {
             if(data) {
                 return new SuccessModal(data)

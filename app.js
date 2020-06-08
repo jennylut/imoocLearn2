@@ -100,7 +100,6 @@ const serverHandle = (req,res) => {
         } else {
             req.session = sessionData
         }
-        console.log('req.session---',req.session)
 
         // 处理 post Data
         return getPostData(req)
@@ -114,7 +113,6 @@ const serverHandle = (req,res) => {
         //     return
         // }
         const blogResult = handleBlogRouter(req, res)
-        console.log('blogResult',blogResult)
         if(blogResult) {
             blogResult.then(blogData =>{
                 if(needSetCookie){
