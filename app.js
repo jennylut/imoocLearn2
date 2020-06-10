@@ -1,7 +1,9 @@
 const querystring = require('querystring')
+const { access } = require('./src/utils/log')
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
 const { get, set } = require('./src/db/redis')
+
 
 const getCookieExpire = () => {
     const d = new Date()
@@ -42,6 +44,9 @@ const getPostData = (req) => {
 }
 
 const serverHandle = (req,res) => {
+    //记录access log
+    access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
+
     // process.env.NODE_ENV
     // 设置返回格式
     res.setHeader('Content-type','application/json')
